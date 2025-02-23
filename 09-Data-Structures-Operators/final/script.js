@@ -758,6 +758,8 @@ const arr = [1, 2, ...[3, 4]];
 const [a, b, ...others] = [1, 2, 3, 4, 5];
 console.log(a, b, others);
 
+
+// as the word rest implies, rest patter will onlt the rest, not include the skipped ones
 const [pizza, , risotto, ...otherFood] = [
   ...restaurant.mainMenu,
   ...restaurant.starterMenu,
@@ -814,7 +816,9 @@ const str = 'Jonas';
 const letters = [...str, ' ', 'S.'];
 console.log(letters);
 console.log(...str);
-// console.log(`${...str} Schmedtmann`);
+
+// only expect to use in array and as a arguments of a function
+// console.log(`${...str} Schmedtmann`); is unligal
 
 // Real-world example
 const ingredients = [

@@ -27,3 +27,15 @@ const restaurant = {
     },
   },
 };
+
+const arr = [2, 3, 4];
+console.log(arr);
+const [x, y, z] = arr;
+console.log(x, y, z);
+
+let [exc0, , exc1] = ['a', 'b', 'c'];
+console.log(exc0, exc1);
+
+[exc0, exc1] = [exc1, exc0];
+
+console.log(exc0, exc1);
