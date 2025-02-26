@@ -78,23 +78,23 @@ const renderCountry = function (data, className) {
 // 	})
 // }
 
-const getCountryData = function(country){
-    fetch(`https://restcountries.com/v3.1/name/${country}`)
-	.then(response=> response.json())
-	.then(data=> {
-	    renderCountry(data[0]);
-	    const neighbour = data[0].borders?.[0];
-	    return fetch(`https://restcountries.com/v3.1/name/${neighbour}`);
-	}).then(response=>response.json())
-	.then(data=>renderCountry(data[0],'neighbour'))
-	.catch(err =>console.error(`${err} !!`));
-}
+const getCountryData = function (country) {
+  fetch(`https://restcountries.com/v3.1/name/${country}`)
+    .then(response => response.json())
+    .then(data => {
+      renderCountry(data[0]);
+      const neighbour = data[0].borders?.[0];
+      return fetch(`https://restcountries.com/v3.1/name/${neighbour}`);
+    })
+    .then(response => response.json())
+    .then(data => renderCountry(data[0], 'neighbour'))
+    .catch(err => console.error(`${err} !!`));
+};
 
 getCountryData('usa');
 //getCountryData('russia');
 //getCountryAndNeighbour('zho');
 //getCountryData('japan');
-
 
 ///////////////////////////////////////
 // Coding Challenge #1
@@ -123,18 +123,29 @@ TEST COORDINATES 2: -33.933, 18.474
 GOOD LUCK 😀
 */
 // 1. create the function
-const whereAmI = function(lat,lng){
+const whereAmI = function (lat, lng) {
+  // 2. reverse geocoding with
+  // http://api.geonames.org/findNearbyJSON?lat=47.3&lng=9&username=coin8275
+  // const request = fetch('http://api.geonames.org/findNearbyJSON?lat=${lat}&lng=${lng}&username=coin8275')
+  // console.log(request);
+  fetch(
+    `http://api.geonames.org/findNearbyJSON?lat=${lat}&lng=${lng}&username=coin8275`,
+  )
+    .then(response => response.json())
+	.then(data => {
+	    if (data.status) throw new Error(`Web error! Status: ${data.status?.message}`);
+	    // 3. log the data
+	    console.log(data)
+	    console.log(`You are in ${data?.geonames[0]?.countryName}`);
+	    return data.geonames[0].countryName;
+	}).then(name => getCountryData(name))
+	.catch(err => alert(err));
 
-    // 2. reverse geocoding
+  // 4. deal the 403 error
+  // 5. reject and prompt a massage
+  // 6. render the country
+  // 7. catch all error
+};
 
-    // 3. log the data
-
-    // 4. deal the 403 error
-
-    // 5. reject and prompt a massage
-
-    // 6. render the country
-
-    // 7. catch all error
-
-}
+whereAmI(35.7, 139.4);
+//whereAmI('lat', 'lng');
