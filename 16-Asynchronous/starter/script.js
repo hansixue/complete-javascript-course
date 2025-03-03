@@ -2,6 +2,7 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
+const imgContainer = document.querySelector('.images');
 
 ///////////////////////////////////////
 
@@ -91,7 +92,7 @@ const getCountryData = function (country) {
     .catch(err => console.error(`${err} !!`));
 };
 
-getCountryData('usa');
+//getCountryData('usa');
 //getCountryData('russia');
 //getCountryAndNeighbour('zho');
 //getCountryData('japan');
@@ -132,14 +133,16 @@ const whereAmI = function (lat, lng) {
     `http://api.geonames.org/findNearbyJSON?lat=${lat}&lng=${lng}&username=coin8275`,
   )
     .then(response => response.json())
-	.then(data => {
-	    if (data.status) throw new Error(`Web error! Status: ${data.status?.message}`);
-	    // 3. log the data
-	    console.log(data)
-	    console.log(`You are in ${data?.geonames[0]?.countryName}`);
-	    return data.geonames[0].countryName;
-	}).then(name => getCountryData(name))
-	.catch(err => alert(err));
+    .then(data => {
+      if (data.status)
+        throw new Error(`Web error! Status: ${data.status?.message}`);
+      // 3. log the data
+      console.log(data);
+      console.log(`You are in ${data?.geonames[0]?.countryName}`);
+      return data.geonames[0].countryName;
+    })
+    .then(name => getCountryData(name))
+    .catch(err => alert(err));
 
   // 4. deal the 403 error
   // 5. reject and prompt a massage
@@ -147,5 +150,99 @@ const whereAmI = function (lat, lng) {
   // 7. catch all error
 };
 
-whereAmI(35.7, 139.4);
+//whereAmI(35.7, 139.4);
 //whereAmI('lat', 'lng');
+
+// Coding Challenge #2
+
+/* 
+Build the image loading functionality that I just showed you on the screen.
+
+Tasks are not super-descriptive this time, so that you can figure out some stuff on your own. Pretend you're working on your own 😉
+
+PART 1
+1. Create a function 'createImage' which receives imgPath as an input. This function returns a promise which creates a new image (use document.createElement('img')) and sets the .src attribute to the provided image path. When the image is done loading, append it to the DOM element with the 'images' class, and resolve the promise. The fulfilled value should be the image element itself. In case there is an error loading the image ('error' event), reject the promise.
+
+If this part is too tricky for you, just watch the first part of the solution.
+*/
+
+// console.log(imgContainer);
+
+const wait = function (seconds) {
+  console.log(`waiting for $(seconds)s ! `);
+  return new Promise(function (resolve) {
+    setTimeout(resolve, seconds * 1000);
+  });
+};
+// part 1
+const createImage = function (imgPath) {
+  // try html : <img src="pic_trulli.jpg" alt="Italian Trulli"> works
+  // Promisify
+  return new Promise((resolve, reject) => {
+    // fetch the image
+    fetch(imgPath)
+      // if ok
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.blob();
+      })
+      // then show that on webpage
+      .then(blob => {
+        //console.log('blob' + blob);
+        showImage();
+        // 生成一个可以直接被 <img> 标签使用的本地 URL
+        const imageURL = URL.createObjectURL(blob);
+        // 1) 在页面中创建一个 <img> 元素并插入
+        const imgElem = document.createElement('img');
+        imgElem.src = imageURL;
+        //console.log(imageURL);
+        //console.log(imgElem);
+          imgContainer.appendChild(imgElem);
+	  return imgElem;
+      })
+      // catch the 403
+      .catch(err => console.log('ERROR! ' + err));
+  });
+};
+
+const hideImage = function () {
+  console.log('hide!!!!');
+  imgContainer.setAttribute('display', 'none');
+};
+
+const showImage = function () {
+  console.log('showing!!!!');
+  imgContainer.setAttribute('display', 'inline');
+};
+/*
+PART 2
+2. Comsume the promise using .then and also add an error handler;
+3. After the image has loaded, pause execution for 2 seconds using the wait function we created earlier;
+4. After the 2 seconds have passed, hide the current image (set display to 'none'), and load a second image (HINT: Use the image element returned by the createImage promise to hide the current image. You will need a global variable for that 😉);
+5. After the second image has loaded, pause execution for 2 seconds again;
+6. After the 2 seconds have passed, hide the current image.
+
+TEST DATA: Images in the img folder. Test the error handler by passing a wrong image path. Set the network speed to 'Fast 3G' in the dev tools Network tab, otherwise images load too fast.
+
+GOOD LUCK 😀
+*/
+
+const showImages = function (...imgs) {
+  console.log(imgs);
+  imgs.forEach(img => {
+    //console.log(img);
+    // show pic 1
+    createImage(img)
+      // weit 2s
+      .then(() => {
+        console.log('going to waiting');
+      }).then(wait(2))
+      // show next
+      .then(hideImage);
+  });
+};
+showImages('./img/img-1.jpg', './img/img-2.jpg', './img/img-3.jpg');
+
+// createImage('./img/img-1.jpg');
